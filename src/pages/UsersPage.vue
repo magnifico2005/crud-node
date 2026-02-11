@@ -37,8 +37,13 @@
         flat
         bordered>
 
-        <template v-slot:body-cell-actions="props">
+                <template v-slot:body-cell-actions="props">
           <q-td>
+          <q-btn
+          flat
+          color="primary"
+          label="Editar"
+          @click="openEdit(props.row)"/>
           <q-btn
           flat
           color="negative"
@@ -58,6 +63,19 @@
 
 
   </q-card>
+  <q-dialog v-model="editDialog">
+    <q-card style="min-width: 320px">
+      <q-card-section class="text-h6">Editar usuário</q-card-section>
+      <q-card-section>
+        <q-input v-model="editForm.name" label="Nome" outlined dense/>
+        <q-input v-model="editForm.email" label="E-mail" outlined dense class="q-mt-sm"/>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn flat label="Cancelar" v-close-popup />
+        <q-btn label="Salvar" color="primary" @click="handleSaveEdit" :loading="editLoading || store.loading"/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
   </q-page>
 
    </template>
@@ -80,6 +98,13 @@
           email:'',
 
         },
+         editDialog: false,
+         editLoading: false,
+         editForm: {
+           id: null,
+           name: '',
+           email: '',
+         },
       columns: [
       {name:'id', label: 'ID' , field:'id' , align:'left'},
       {name:'name', label: 'Nome' , field:'name' , align:'left'},
@@ -107,6 +132,29 @@
         this.form.email= ''
 
       },
+      openEdit(row) {
+        this.editForm.id = row?.id ?? null
+        this.editForm.name = row?.name || ''
+        this.editForm.email = row?.email || ''
+        this.editDialog = true
+      },
+      async handleSaveEdit() {
+        const name = (this.editForm.name || '').trim()
+        const email = (this.editForm.email || '').trim()
+
+        if (!name || !email){
+          this.$q.notify({ type: 'negative', message: 'Informe nome e e-mail'})
+          return
+        }
+
+        this.editLoading = true
+        try {
+          await this.store.edit(this.editForm.id, { name, email })
+          this.editDialog = false
+        } finally {
+          this.editLoading = false
+        }
+      },
     },
 
     mounted() {
@@ -116,3 +164,4 @@
   }
 
    </script>
+

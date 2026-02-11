@@ -54,11 +54,14 @@ export const useUsersStore = defineStore('users', {
         try{
 
           const updated = await updateUser(id, payload)
-          const idx = history.items[idx ] = updated
+          const idx = this.items.findIndex((u) => u.id === id)
+          if (idx >= 0) {
+            this.items[idx] = updated
+          }
           return updated
         } catch (err){
 
-          this.error = err?.response?.date?.message || err?.message || 'Falha ao atualizar o usuário'
+          this.error = err?.response?.data?.message || err?.message || 'Falha ao atualizar o usuário'
           throw err
 
         } finally{
@@ -83,3 +86,5 @@ export const useUsersStore = defineStore('users', {
   },
 
 })
+
+
