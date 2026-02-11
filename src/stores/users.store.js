@@ -15,7 +15,7 @@ export const useUsersStore = defineStore('users', {
 
   actions :{
 
-    async fetAll(){
+    async fetchAll(){
       this.loading = true
       this.error = null
 

@@ -90,7 +90,7 @@
       }
     },
 
-    methods: {
+  methods: {
       async handledAdd() {
 
         const name = (this.form.name || '').trim()
@@ -109,7 +109,10 @@
       },
     },
 
+    mounted() {
+      this.store.fetchAll()
+    },
 
-   }
+  }
 
    </script>
