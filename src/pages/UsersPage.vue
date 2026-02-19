@@ -11,6 +11,9 @@
           <div class="col-12 col-md-4 ">
             <q-input  v-model="form.email" label="E-mail" outlined dense/>
           </div>
+          <div class="col-12 col-md-4 ">
+            <q-input  v-model="form.password" label="Senha" outlined dense/>
+          </div>
          <div class="col-12 col-md-4 flex intems-center">
           <q-btn label="Adicionar" color="primary" @click="handledAdd" :loading="store.loading"/>
           <q-btn flat label="Recarregar" class="q-ml-sm" @click="store.fetchAll()" />
@@ -69,6 +72,7 @@
       <q-card-section>
         <q-input v-model="editForm.name" label="Nome" outlined dense/>
         <q-input v-model="editForm.email" label="E-mail" outlined dense class="q-mt-sm"/>
+        <q-input v-model="editForm.password" label="Senha" outlined dense class="q-mt-sm"/>
       </q-card-section>
       <q-card-actions align="right">
         <q-btn flat label="Cancelar" v-close-popup />
@@ -96,6 +100,7 @@
         form:{
           name:'',
           email:'',
+          password:'',
           roles: '',
 
         },
@@ -105,12 +110,14 @@
            id: null,
            name: '',
            email: '',
+           password:'',
            roles: '',
          },
       columns: [
       {name:'id', label: 'ID' , field:'id' , align:'left'},
       {name:'name', label: 'Nome' , field:'name' , align:'left'},
       {name:'email', label: 'E-mail' , field:'email' , align:'left'},
+      {name:'password', label: 'senha' , field:'senha' , align:'left'},
       {name:'roles', label: 'Permissão' , field:'roles' , align:'left'},
       {name:'actions', label: 'Ações' , field:'actions' , align:'right'}
       ] ,
@@ -123,39 +130,43 @@
 
         const name = (this.form.name || '').trim()
         const email = (this.form.email || '').trim()
+        const password = (this.form.password || '').trim()
         const roles = (this.form.roles || 'Usuário')
 
 
-        if (!name || !email){
-          this.$q.notify({ type: 'negative', message: 'Informe nome e e-mail'})
+        if (!name || !email || !password){
+          this.$q.notify({ type: 'negative', message: 'Informe nome e e-mail e senha'})
           return
         }
 
-        await this.store.add({name, email, roles })
+        await this.store.add({name, email, password, roles })
         this.form.name = ''
         this.form.email= ''
+        this.form.password= ''
 
       },
       openEdit(row) {
         this.editForm.id = row?.id ?? null
         this.editForm.name = row?.name || ''
         this.editForm.email = row?.email || ''
+        this.editForm.password = row?.password || ''
         this.editForm.roles = row?.roles || 'Usuário'
         this.editDialog = true
       },
       async handleSaveEdit() {
         const name = (this.editForm.name || '').trim()
         const email = (this.editForm.email || '').trim()
+        const password = (this.editForm.password || '').trim()
         const roles = (this.editForm.roles || 'Usuario')
 
-        if (!name || !email){
-          this.$q.notify({ type: 'negative', message: 'Informe nome e e-mail'})
+        if (!name || !email || !password){
+          this.$q.notify({ type: 'negative', message: 'Informe nome e e-mail e senha'})
           return
         }
 
         this.editLoading = true
         try {
-          await this.store.edit(this.editForm.id, { name, email, roles})
+          await this.store.edit(this.editForm.id, { name, email, password, roles})
           this.editDialog = false
         } finally {
           this.editLoading = false

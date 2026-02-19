@@ -15,9 +15,8 @@ export async function createUser(payload) {
 }
 
 export async function updateUser(id, payload) {
-  const {data} = await api.put(`/api/users/${id}`, payload)
+  const { data } = await api.patch(`/api/users/${id}`, payload)
   return data
-
 }
 
 export async function deleteUser(id) {
