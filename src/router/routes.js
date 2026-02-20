@@ -7,6 +7,10 @@ const routes = [
         path: 'users',
         component: () => import('pages/UsersPage.vue'),
       },
+      {
+    path: '/login-test',
+    component: () => import('pages/LoginTestPage.vue')
+     }
     ],
   },
   {

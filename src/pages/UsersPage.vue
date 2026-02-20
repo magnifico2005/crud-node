@@ -145,6 +145,17 @@
         this.form.password= ''
 
       },
+
+      async handleLogin(){
+        const auth = useUsersStore()
+        await auth.login(this.email, this.password)
+
+        const res = await auth.$api.get('/api/me')
+        console.log(res.data)
+
+      },
+
+
       openEdit(row) {
         this.editForm.id = row?.id ?? null
         this.editForm.name = row?.name || ''

@@ -34,6 +34,12 @@ const linksList = [
     caption: 'Cadastrar Usuário',
     icon: 'add_circle',
     link: '/users',
+  },
+  {
+    title: 'Login',
+    caption: 'Logar no sistema',
+    icon: 'user',
+    link: '/login-test',
   }
 ]
 
