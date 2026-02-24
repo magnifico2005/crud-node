@@ -1,8 +1,8 @@
 <template>
-  <q-page class="q-pa-md">
-    <div class="text-h6 q-mb-md">Teste Login</div>
+  <div class="q-pa-md flex flex-center">
+    <q-card class="q-pa-md" style="width: 420px; max-width: 92vw;">
+      <div class="text-h6 q-mb-md">Teste Login</div>
 
-    <q-card class="q-pa-md" style="max-width: 420px">
       <q-input v-model="email" label="E-mail" outlined class="q-mb-sm" />
       <q-input v-model="password" label="Senha" type="password" outlined class="q-mb-md" />
 
@@ -16,8 +16,9 @@
 
       <div class="text-caption">Resultado:</div>
       <pre style="white-space: pre-wrap">{{ result }}</pre>
+      <span> {{ result.user }}</span>
     </q-card>
-  </q-page>
+  </div>
 </template>
 
 <script>
@@ -28,22 +29,31 @@ export default {
   name: 'LoginTestPage',
   data () {
     return {
+      auth: null,
       email: 'mar@marcio.com',
       password: '123456',
       result: '',
       loading: false
     }
   },
+
+  created () {
+    this.auth = useAuthStore()
+  },
+
   methods: {
     async handleLogin () {
-      const auth = useAuthStore()
       this.loading = true
       try {
-        await auth.login(this.email, this.password)
+        await this.auth.login(this.email, this.password)
 
-        console.log(this.result , 'token', auth.accessToken)
-
-        this.result = JSON.stringify({ loggedIn: auth.isLoggedIn, user: auth.user }, null, 2)
+        this.result = JSON.stringify({
+          loggedIn: this.auth.isLoggedin,
+          token: this.auth.accessToken,
+          user: this.auth.user
+        }, null, 2)
+        const redirect = this.$route?.query?.redirect || '/'
+        this.$router.replace(redirect)
       } catch (e) {
         this.result = JSON.stringify({ error: e?.response?.data || e.message }, null, 2)
       } finally {
@@ -53,20 +63,28 @@ export default {
 
     async handleMe () {
       try {
-        // Importante: não setamos Authorization aqui.
-        // O interceptor deve colocar sozinho.
         const { data } = await api.get('/api/me')
-        this.result = JSON.stringify(data, null, 2)
+
+        this.result = JSON.stringify({
+          ok: true,
+          data
+        }, null, 2)
       } catch (e) {
-        this.result = JSON.stringify({ error: e?.response?.data || e.message }, null, 2)
+        this.result = JSON.stringify({
+          ok: false,
+          status: e?.response?.status,
+          error: e?.response?.data || e.message
+        }, null, 2)
       }
     },
 
     async handleLogout () {
-      const auth = useAuthStore()
       try {
-        await auth.logout()
-        this.result = JSON.stringify({ loggedIn: auth.isLoggedIn }, null, 2)
+        await this.auth.logout()
+        this.result = JSON.stringify({
+          loggedIn: this.auth.isLoggedin,
+          token: this.auth.accessToken
+        }, null, 2)
       } catch (e) {
         this.result = JSON.stringify({ error: e?.response?.data || e.message }, null, 2)
       }

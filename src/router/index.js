@@ -7,6 +7,8 @@ import {
 } from 'vue-router'
 import routes from './routes'
 
+import { useAuthStore } from 'src/stores/auth'
+
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -32,6 +34,36 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
   })
+
+  Router.beforeEach(async (to) => {
+    const auth = useAuthStore()
+
+    //rotas públicas
+    if (to.meta?.requiresAuth){
+      const ok  = await auth.initSession()
+      if( !ok)
+        return {name: 'login' , query: {redirect: to.fullPath}}
+    }
+
+    const roles = to.meta.roles
+    if( roles && roles.length){
+      const userRole = auth.user?.roles
+      if(!userRole || !roles.includes(userRole)){
+        return {name: 'home'}
+      }
+    }
+
+    // se já esta logado e tenta ir para logim  manda para home
+    if ( to.name === 'login' && auth.isLoggedin){
+      return {name: 'home'}
+
+    }
+    return true
+
+
+  })
+
+
 
   return Router
 })

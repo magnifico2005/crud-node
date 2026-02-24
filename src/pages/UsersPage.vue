@@ -156,13 +156,29 @@
       },
 
 
-      openEdit(row) {
-        this.editForm.id = row?.id ?? null
-        this.editForm.name = row?.name || ''
-        this.editForm.email = row?.email || ''
-        this.editForm.password = row?.password || ''
-        this.editForm.roles = row?.roles || 'Usuário'
-        this.editDialog = true
+      async openEdit(row) {
+        const id = row?.id ?? null
+        if (!id) return
+
+        this.editLoading = true
+        try {
+          const user = await this.store.fetchById(id)
+          this.editForm.id = user?.id ?? id
+          this.editForm.name = user?.name || ''
+          this.editForm.email = user?.email || ''
+          this.editForm.password = ''
+          this.editForm.roles = user?.role || row?.roles || 'Usuário'
+        } catch (e) {
+          console.log(e)
+          this.editForm.id = id
+          this.editForm.name = row?.name || ''
+          this.editForm.email = row?.email || ''
+          this.editForm.password = ''
+          this.editForm.roles = row?.roles || 'Usuário'
+        } finally {
+          this.editLoading = false
+          this.editDialog = true
+        }
       },
       async handleSaveEdit() {
         const name = (this.editForm.name || '').trim()

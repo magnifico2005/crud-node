@@ -1,15 +1,36 @@
+
 const routes = [
   {
-    path: '/',
+
+        path: '',
+        name: 'login',
+        component: () => import('pages/LoginPage.vue'),
+        meta: { public: true }
+      },
+
+
+  {
+    path:'/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: 'users',
-        component: () => import('pages/UsersPage.vue'),
+        path: '',
+        name: 'home',
+        component: () => import('pages/IndexPage.vue'),
+        meta: {requiresAuth: true}
       },
       {
-    path: '/login-test',
-    component: () => import('pages/LoginTestPage.vue')
+        path: 'users',
+        name: 'users',
+        component: () => import('pages/UsersPage.vue'),
+         meta: {requiresAuth: true}
+      },
+      {
+    path: 'login-test',
+    name: 'login-test',
+    component: () => import('pages/LoginTestPage.vue'),
+     meta: {requiresAuth: true}
+
      }
     ],
   },

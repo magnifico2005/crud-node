@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-import {listUsers, createUser , updateUser, deleteUser } from 'src/services/user.service'
+import {listUsers, getUser, createUser , updateUser, deleteUser } from 'src/services/user.service'
 
 
 export const useUsersStore = defineStore('users', {
@@ -30,9 +30,26 @@ export const useUsersStore = defineStore('users', {
       }
       },
 
+    async fetchById(id) {
+      this.loading = true
+      this.error = null
+
+      try {
+        const user = await getUser(id)
+        return user
+      } catch (err) {
+        this.error = err?.response?.data?.message || err?.message || 'Falha ao carregar usuário'
+        throw err
+      } finally {
+        this.loading = false
+      }
+    },
+
     async add(payload){
       this.loading = true
       this.error = null
+
+      console.log(payload)
       try{
 
         const created = await createUser(payload)
@@ -86,5 +103,4 @@ export const useUsersStore = defineStore('users', {
   },
 
 })
-
 

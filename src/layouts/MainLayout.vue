@@ -5,7 +5,8 @@
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title> Sistema de cadastro de usuário </q-toolbar-title>
-
+        <q-space />
+        <q-btn flat color="negative" label="Sair" @click="handleLogout" />
 
       </q-toolbar>
     </q-header>
@@ -26,6 +27,8 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from 'src/stores/auth'
 import EssentialLink from 'components/EssentialLink.vue'
 
 const linksList = [
@@ -52,6 +55,8 @@ export default defineComponent({
 
   setup() {
     const leftDrawerOpen = ref(false)
+    const auth = useAuthStore()
+    const router = useRouter()
 
     return {
       linksList,
@@ -59,6 +64,13 @@ export default defineComponent({
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
+      async handleLogout () {
+        try {
+          await auth.logout()
+        } finally {
+          router.replace({ name: 'login' })
+        }
+      }
     }
   },
 })

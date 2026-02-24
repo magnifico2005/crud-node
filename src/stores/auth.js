@@ -47,6 +47,23 @@ export const useAuthStore = defineStore('auth', {
     async logout() {
       await api.post('/api/auth/logout')
       this.clearSession()
+    },
+
+    async initSession(){
+      if (this.accessToken) return true
+
+
+      // Tenta recuperar sessão via refresh cookie
+
+
+      try{
+        await this.refresh()
+        return true
+      }catch (e) {
+        this.clearSession()
+        console.log(e)
+        return false
+      }
     }
   }
 })
