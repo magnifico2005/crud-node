@@ -4,7 +4,8 @@
         <div class="text-h6 q-mb-md"> Entrar </div>
 
           <q-input v-model="email" label="E mail" outlined class="q-mb-sm"/>
-          <q-input v-model="password" type="password" label="Senha" outlined class="q-mb-sm"/>
+       <q-input v-model="password" label="Senha" type="password" outlined autocomplete="current-password" lazy-rules :rules="[val => !!val || 'Informe a senha']" class="q-mb-sm" />
+
 
           <q-btn label="Entrar" color="primary" class="full-width" @click="handledLogin"  :locading="loading "/>
 

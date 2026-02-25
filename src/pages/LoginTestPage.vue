@@ -4,7 +4,15 @@
       <div class="text-h6 q-mb-md">Teste Login</div>
 
       <q-input v-model="email" label="E-mail" outlined class="q-mb-sm" />
-      <q-input v-model="password" label="Senha" type="password" outlined class="q-mb-md" />
+      <q-input
+  v-model="password"
+  label="Senha"
+  type="password"
+  outlined
+  autocomplete="current-password"
+  lazy-rules
+  :rules="[val => !!val || 'Informe a senha']"
+/>
 
       <div class="row q-gutter-sm">
         <q-btn label="Login" color="primary" @click="handleLogin" :loading="loading" />

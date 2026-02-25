@@ -36,13 +36,13 @@ const linksList = [
     title: 'Cadastro de usuário',
     caption: 'Cadastrar Usuário',
     icon: 'add_circle',
-    link: '/users',
+    link: '/home',
   },
   {
     title: 'Login',
     caption: 'Logar no sistema',
     icon: 'user',
-    link: '/login-test',
+    link: '/cadastro',
   }
 ]
 

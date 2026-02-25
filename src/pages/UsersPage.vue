@@ -12,7 +12,7 @@
             <q-input  v-model="form.email" label="E-mail" outlined dense/>
           </div>
           <div class="col-12 col-md-4 ">
-            <q-input  v-model="form.password" label="Senha" outlined dense/>
+            <q-input  v-model="form.password" label="Senha" type="password" outlined dense/>
           </div>
          <div class="col-12 col-md-4 flex intems-center">
           <q-btn label="Adicionar" color="primary" @click="handledAdd" :loading="store.loading"/>
@@ -32,13 +32,14 @@
       <q-card-section>
 
         <q-table
-        title="Lista"
+        flat
+        bordered
+        title="Usuários"
         :rows="store.items"
         :columns="columns"
         row-key="id"
-        :loading="store.loading"
-        flat
-        bordered>
+        :pagination="initialPagination"
+        :loading="store.loading">
 
                 <template v-slot:body-cell-actions="props">
           <q-td>
@@ -72,7 +73,7 @@
       <q-card-section>
         <q-input v-model="editForm.name" label="Nome" outlined dense/>
         <q-input v-model="editForm.email" label="E-mail" outlined dense class="q-mt-sm"/>
-        <q-input v-model="editForm.password" label="Senha" outlined dense class="q-mt-sm"/>
+        <q-input v-model="editForm.password" label="Senha" type="password" outlined dense class="q-mt-sm"/>
       </q-card-section>
       <q-card-actions align="right">
         <q-btn flat label="Cancelar" v-close-popup />
@@ -97,6 +98,12 @@
     data(){
       return{
         store: useUsersStore(),
+        initialPagination: {
+          sortBy: 'name',
+          descending: false,
+          page: 1,
+          rowsPerPage: 10
+        },
         form:{
           name:'',
           email:'',
@@ -114,15 +121,50 @@
            roles: '',
          },
       columns: [
-      {name:'id', label: 'ID' , field:'id' , align:'left'},
-      {name:'name', label: 'Nome' , field:'name' , align:'left'},
-      {name:'email', label: 'E-mail' , field:'email' , align:'left'},
-      {name:'password', label: 'senha' , field:'senha' , align:'left'},
-      {name:'roles', label: 'Permissão' , field:'roles' , align:'left'},
-      {name:'actions', label: 'Ações' , field:'actions' , align:'right'}
+        {
+          name: 'id',
+          required: true,
+          label: 'ID',
+          align: 'left',
+          field: row => row.id,
+          format: val => `${val}`,
+          sortable: true
+        },
+        {
+          name: 'name',
+          required: true,
+          label: 'Nome',
+          align: 'left',
+          field: row => row.name,
+          format: val => `${val}`,
+          sortable: true
+        },
+        {
+          name: 'email',
+          label: 'E-mail',
+          align: 'left',
+          field: row => row.email,
+          format: val => `${val}`,
+          sortable: true
+        },
+        {
+          name: 'role',
+          label: 'Permissão',
+          align: 'left',
+          field: row => row.role || row.roles || '',
+          format: val => `${val}`,
+          sortable: true
+        },
+        {
+          name: 'actions',
+          label: 'Ações',
+          align: 'right',
+          field: row => row.id
+        }
       ] ,
 
       }
+
     },
 
   methods: {
@@ -163,6 +205,7 @@
         this.editLoading = true
         try {
           const user = await this.store.fetchById(id)
+          console.log(user)
           this.editForm.id = user?.id ?? id
           this.editForm.name = user?.name || ''
           this.editForm.email = user?.email || ''
@@ -208,4 +251,3 @@
   }
 
    </script>
-

@@ -36,33 +36,37 @@ export default defineRouter(function (/* { store, ssrContext } */) {
   })
 
   Router.beforeEach(async (to) => {
-    const auth = useAuthStore()
+  const auth = useAuthStore()
 
-    //rotas públicas
-    if (to.meta?.requiresAuth){
-      const ok  = await auth.initSession()
-      if( !ok)
-        return {name: 'login' , query: {redirect: to.fullPath}}
-    }
-
-    const roles = to.meta.roles
-    if( roles && roles.length){
-      const userRole = auth.user?.roles
-      if(!userRole || !roles.includes(userRole)){
-        return {name: 'home'}
-      }
-    }
-
-    // se já esta logado e tenta ir para logim  manda para home
-    if ( to.name === 'login' && auth.isLoggedin){
-      return {name: 'home'}
-
+  // 1) Rotas públicas
+  if (to.meta?.public) {
+    // se já está logado e tenta abrir /login, manda para home
+    if (to.name === 'login' && auth.isLoggedIn) {
+      return { name: 'home' }
     }
     return true
+  }
 
+  // 2) Rotas protegidas
+  if (to.meta?.requiresAuth) {
+    const ok = await auth.initSession()
 
-  })
+    if (!ok) {
+      return { name: 'login', query: { redirect: to.fullPath } }
+    }
 
+    // 3) RBAC por role
+    const roles = to.meta?.roles
+    if (roles && roles.length) {
+      const userRole = auth.user?.role
+      if (!userRole || !roles.includes(userRole)) {
+        return { name: 'home' }
+      }
+    }
+  }
+
+  return true
+})
 
 
   return Router
